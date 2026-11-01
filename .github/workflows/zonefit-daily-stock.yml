@@ -3,19 +3,39 @@ name: ZONEFIT Daily Auto-Sync 5001
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '17 20 * * *'
+    inputs:
+      mode:
+        description: Inventory execution mode
+        required: true
+        default: preview
+        type: choice
+        options:
+          - preview
+          - sync
 
 permissions:
   contents: read
 
+concurrency:
+  group: zonefit-inventory-5001
+  cancel-in-progress: false
+
 jobs:
   inventory-sync:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     defaults:
       run:
         working-directory: ZONEFIT_Daily_AutoSync_5001_GitHub_Ready_v2
+
+    env:
+      ZONEFIT_MODE: ${{ inputs.mode || 'preview' }}
+      ZONEFIT_SITE_URL: ${{ secrets.ZONEFIT_SITE_URL }}
+      ZONEFIT_WORKER_TOKEN: ${{ secrets.ZONEFIT_WORKER_TOKEN }}
+      ZONEFIT_STYLE_CODES: '5001'
+      ZONEFIT_MAX_STYLES: '1'
+      ZONEFIT_MIN_5001_ROWS: '300'
 
     steps:
       - name: Checkout repository
@@ -24,11 +44,16 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       - name: Install dependencies
         run: npm install
 
-      - name: Run tests
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run automated tests
         run: npm test
 
+      - name: Run ZONEFIT inventory worker
+        run: npm run worker
