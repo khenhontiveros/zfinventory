@@ -4,7 +4,8 @@ name: ZONEFIT Daily Auto-Sync 5001
 on:
   workflow_dispatch:
   schedule:
-    - cron: '17 20 * * *'
+    - cron: '17 19 * * *'
+      timezone: Australia/Sydney
 
 permissions:
   contents: read
