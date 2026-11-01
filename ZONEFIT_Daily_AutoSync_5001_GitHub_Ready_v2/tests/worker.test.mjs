@@ -98,11 +98,16 @@ test('missing/mismatched worker credentials stop before launching browser',async
  assert.equal(h.calls.length,1);
 });
 
-test('pilot schedule uses Sydney timezone and GitHub manual preview',async()=>{
- const yml=await readFile(new URL('../.github/workflows/zonefit-daily-stock.yml',import.meta.url),'utf8');
- assert.match(yml,/timezone: 'Australia\/Sydney'/);
- assert.match(yml,/cron: '17 6 \* \* \*'/);
- assert.match(yml,/default: preview/);
- assert.match(yml,/ZONEFIT_STYLE_CODES: '5001'/);
- assert.match(yml,/workflow_dispatch:/);
+
+test('pilot schedule uses Sydney timezone and GitHub manual preview', async () => {
+  const yml = await readFile(
+    new URL('../.github/workflows/zonefit-daily-stock.yml', import.meta.url),
+    'utf8'
+  );
+
+  assert.match(yml, /workflow_dispatch:/);
+  assert.match(yml, /default:\s*preview/);
+  assert.match(yml, /ZONEFIT_STYLE_CODES:\s*['"]?5001['"]?/);
+  assert.match(yml, /TZ:\s*Australia\/Sydney/);
+  assert.match(yml, /cron:\s*['"]?17 19 \* \* \*/);
 });
