@@ -1,1 +1,34 @@
 
+name: ZONEFIT Daily Auto-Sync 5001
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 20 * * *'
+
+permissions:
+  contents: read
+
+jobs:
+  inventory-sync:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ZONEFIT_Daily_AutoSync_5001_GitHub_Ready_v2
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
+
