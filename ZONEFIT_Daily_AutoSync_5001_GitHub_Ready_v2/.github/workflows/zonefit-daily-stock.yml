@@ -3,12 +3,25 @@ name: ZONEFIT Daily Auto-Sync 5001
 
 on:
   workflow_dispatch:
+    inputs:
+      mode:
+        description: Preview or sync
+        required: true
+        default: preview
+        type: choice
+        options:
+          - preview
+          - sync
+
   schedule:
     - cron: '17 19 * * *'
-      timezone: Australia/Sydney
 
 permissions:
   contents: read
+
+env:
+  TZ: Australia/Sydney
+  ZONEFIT_STYLE_CODES: '5001'
 
 jobs:
   inventory-sync:
@@ -32,4 +45,3 @@ jobs:
 
       - name: Run tests
         run: npm test
-
